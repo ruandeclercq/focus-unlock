@@ -1,11 +1,14 @@
 PACKAGE := focus-unlock_0.1.0_all.deb
 PACKAGE_FILES := focus_unlock.py focus-unlock.service README.md LICENSE debian/control debian/postinst debian/prerm Makefile
 
-.PHONY: all package test test-notification
+.PHONY: all package clean test test-notification
 
 all: package
 
 package: $(PACKAGE)
+
+clean:
+	rm -f $(PACKAGE)
 
 test:
 	python3 -m unittest discover -s tests -v
