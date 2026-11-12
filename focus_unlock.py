@@ -8,7 +8,7 @@ import os
 from rich.progress import Progress, BarColumn, TimeElapsedColumn
 from rich.console import Console
 from rich.table import Table
-from signal import signal, SIGINT
+from signal import signal, SIGINT, SIGTERM
 import subprocess
 import sys
 import time
@@ -77,8 +77,21 @@ def load_work_done():
 
 
 def beep():
-    sys.stdout.write('\a')
-    sys.stdout.flush()
+    # Notifications work without a terminal; the sound is controlled by GNOME.
+    try:
+        result = subprocess.run(
+            ["notify-send", "--app-name=Focus Unlock",
+             "--hint=string:sound-name:message-new-instant",
+             "Time for a break", "Get up and move around for a while."],
+            capture_output=True, text=True, check=False,
+        )
+        if result.returncode:
+            logger.error("Could not send reminder: %s", result.stderr.strip())
+    except OSError as exc:
+        logger.error("Could not send reminder: %s", exc)
+    if sys.stdout.isatty():
+        sys.stdout.write('\a')
+        sys.stdout.flush()
 
 
 def get_formatted_duration(seconds):
@@ -151,7 +164,7 @@ def add_work_done(start, stop):
 
 
 def sigint_handler(signal_received, frame):
-    logger.warning('SIGINT or CTRL-C detected. Exiting gracefully')
+    logger.info('Stopping and saving the current work session')
 
     if start is not None:
         add_work_done(start, datetime.now())
@@ -175,6 +188,7 @@ logger.addHandler(c_handler)
 def main():
     global start
     signal(SIGINT, sigint_handler)
+    signal(SIGTERM, sigint_handler)
 
     show_work_done(work_done, all=True)
 

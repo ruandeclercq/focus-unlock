@@ -1,0 +1,15 @@
+[Unit]
+Description=Focus Unlock movement break reminders
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+StateDirectory=focus-unlock
+WorkingDirectory=%S/focus-unlock
+ExecStart=/usr/bin/python3 /usr/lib/focus-unlock/focus_unlock.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

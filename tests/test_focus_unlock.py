@@ -4,7 +4,7 @@ from contextlib import redirect_stdout
 from types import SimpleNamespace
 from unittest.mock import patch
 
-import unlock_tracker as tracker
+import focus_unlock as tracker
 
 
 class TrackerTests(unittest.TestCase):
@@ -27,11 +27,23 @@ class TrackerTests(unittest.TestCase):
             tracker.show_work_done_table(sessions)
         self.assertEqual(sessions[0]["start"], "2020-01-01 10:00:00")
 
-    def test_beep_flushes_output(self):
-        with patch.object(tracker.sys, "stdout") as stdout:
+    def test_background_reminder_requests_notification_sound(self):
+        with patch.object(tracker.sys, "stdout") as stdout, patch.object(
+            tracker.subprocess, "run", return_value=SimpleNamespace(returncode=0)
+        ) as run:
+            stdout.isatty.return_value = False
             tracker.beep()
-            stdout.write.assert_called_once_with("\a")
-            stdout.flush.assert_called_once()
+            command = run.call_args.args[0]
+            self.assertEqual(command[0], "notify-send")
+            self.assertIn("--hint=string:sound-name:message-new-instant", command)
+            stdout.write.assert_not_called()
+
+    def test_notification_failure_is_logged(self):
+        with patch.object(tracker.sys, "stdout") as stdout, patch.object(
+            tracker.subprocess, "run", side_effect=FileNotFoundError("notify-send")
+        ), self.assertLogs(tracker.logger, level="ERROR"):
+            stdout.isatty.return_value = False
+            tracker.beep()
 
 
 if __name__ == "__main__":
