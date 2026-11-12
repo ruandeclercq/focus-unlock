@@ -147,16 +147,10 @@ def show_work_done_table(work_done):
     console.print(table)
 
 
-def show_work_done(work_done, all=False):
-    if len(work_done) == 0:
-        return
-
-    if not all:
-        show_work_done_table(work_done[list(work_done.keys())[-1]])
-        return
-
-    for day in work_done:
-        show_work_done_table(work_done[day])
+def show_work_done(work_done):
+    # Keep historical records, but display only the current day's sessions.
+    today = datetime.now().strftime(SHORT_DATE_FORMAT)
+    show_work_done_table(work_done.get(today, []))
 
 
 def add_work_done(start, stop):
@@ -195,7 +189,7 @@ def main():
     signal(SIGINT, sigint_handler)
     signal(SIGTERM, sigint_handler)
 
-    show_work_done(work_done, all=True)
+    show_work_done(work_done)
 
     prev_state = "inactive"
     prev_time = datetime.now()

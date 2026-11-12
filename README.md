@@ -2,7 +2,7 @@
 
 Focus Unlock is a small reminder to take movement breaks during long stretches at the computer. I built it during the 2020 COVID lockdown, when I noticed I was working too many hours without getting up. Inspired by the Pomodoro technique, I wanted a nudge to stop, move my body, and return to work refreshed.
 
-The script watches the GNOME screensaver state. After 40 continuous minutes with the screen unlocked, it sends a desktop notification every minute until the screensaver becomes active or the screen is locked. Locking the screen ends the work session; the next unlock starts a fresh 40-minute timer. It also saves work sessions to `work_done.json` in the current directory and displays their durations.
+The script watches the GNOME screensaver state. After 40 continuous minutes with the screen unlocked, it sends a desktop notification every minute until the screensaver becomes active or the screen is locked. Locking the screen ends the work session; the next unlock starts a fresh 40-minute timer. It also saves work sessions to `work_done.json` in the current directory and displays today's session durations. Earlier sessions remain in the file.
 
 ## Run it
 
