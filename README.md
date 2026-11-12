@@ -21,11 +21,10 @@ On Debian or Ubuntu, install `make` and `dpkg-dev`, then run `make package` to b
 
 ```sh
 sudo apt install ./focus-unlock_0.1.0_all.deb
-systemctl --user daemon-reload
-systemctl --user enable --now focus-unlock.service
+systemctl --user status focus-unlock.service
 ```
 
-The package installs the Python and GNOME dependencies. The service runs in a GNOME session that activates `graphical-session.target` and stores sessions in `~/.local/state/focus-unlock/work_done.json` (or under `$XDG_STATE_HOME` if set). Check it with `systemctl --user status focus-unlock.service` and `journalctl --user -u focus-unlock.service`. Stop automatic startup with `systemctl --user disable --now focus-unlock.service`.
+The package installs the Python and GNOME dependencies and enables the service for all users. It starts the service in running graphical sessions and when a graphical session begins. The service runs in a GNOME session that activates `graphical-session.target` and stores sessions in `~/.local/state/focus-unlock/work_done.json` (or under `$XDG_STATE_HOME` if set). Check it with `systemctl --user status focus-unlock.service` and `journalctl --user -u focus-unlock.service`. Stop it and prevent automatic startup for your user with `systemctl --user mask --now focus-unlock.service`; use `systemctl --user unmask focus-unlock.service` to allow it again.
 
 To check notifications and sound before waiting 40 minutes, run:
 

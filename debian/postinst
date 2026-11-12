@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = configure ]; then
+    # Enable the service for all users before refreshing running sessions.
+    systemctl --global enable focus-unlock.service
+    # Reload each running user manager, then start only in graphical sessions.
+    loginctl list-users --no-legend --no-pager 2>/dev/null | while read -r uid user rest; do
+        [ -S "/run/user/$uid/bus" ] || continue
+        if runuser -u "$user" -- env XDG_RUNTIME_DIR="/run/user/$uid" \
+            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+            systemctl --user daemon-reload; then
+            if runuser -u "$user" -- env XDG_RUNTIME_DIR="/run/user/$uid" \
+                DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+                systemctl --user is-active --quiet graphical-session.target; then
+                runuser -u "$user" -- env XDG_RUNTIME_DIR="/run/user/$uid" \
+                    DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+                    systemctl --user start --no-block focus-unlock.service || true
+            fi
+        fi
+    done || true
+fi
