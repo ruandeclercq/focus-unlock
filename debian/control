@@ -1,0 +1,9 @@
+Package: focus-unlock
+Version: 0.1.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: python3, python3-rich, libnotify-bin, gnome-screensaver
+Maintainer: Focus Unlock contributors
+Description: movement break reminders for GNOME
+ Reminds you to take a break after 40 minutes of continuous screen time.
