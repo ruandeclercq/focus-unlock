@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from datetime import datetime
+import argparse
 import json
 import logging
 import math
@@ -78,6 +79,7 @@ def load_work_done():
 
 def beep():
     # Notifications work without a terminal; the sound is controlled by GNOME.
+    success = False
     try:
         result = subprocess.run(
             ["notify-send", "--app-name=Focus Unlock",
@@ -87,11 +89,14 @@ def beep():
         )
         if result.returncode:
             logger.error("Could not send reminder: %s", result.stderr.strip())
+        else:
+            success = True
     except OSError as exc:
         logger.error("Could not send reminder: %s", exc)
     if sys.stdout.isatty():
         sys.stdout.write('\a')
         sys.stdout.flush()
+    return success
 
 
 def get_formatted_duration(seconds):
@@ -223,4 +228,10 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Remind yourself to take movement breaks.")
+    parser.add_argument("--test-notification", action="store_true",
+                        help="send one test reminder and exit")
+    args = parser.parse_args()
+    if args.test_notification:
+        sys.exit(0 if beep() else 1)
     main()

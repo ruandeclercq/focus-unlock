@@ -17,10 +17,10 @@ Leave the script running in a terminal and press Ctrl+C to stop it. Reminders re
 
 ## Debian package
 
-On Debian or Ubuntu, install `make` and `dpkg-dev`, then run `make package` to build `dist/focus-unlock_0.1.0_all.deb`. Install it on your GNOME desktop with:
+On Debian or Ubuntu, install `make` and `dpkg-dev`, then run `make package` to build `focus-unlock_0.1.0_all.deb`. Install it on your GNOME desktop with:
 
 ```sh
-sudo apt install ./dist/focus-unlock_0.1.0_all.deb
+sudo apt install ./focus-unlock_0.1.0_all.deb
 systemctl --user daemon-reload
 systemctl --user enable --now focus-unlock.service
 ```
@@ -30,7 +30,7 @@ The package installs the Python and GNOME dependencies. The service runs in a GN
 To check notifications and sound before waiting 40 minutes, run:
 
 ```sh
-notify-send --app-name='Focus Unlock' --hint=string:sound-name:message-new-instant 'Time for a break' 'Get up and move around for a while.'
+make test-notification
 ```
 
-If you see the notification but hear no sound, check GNOME's notification sound settings and system volume. A desktop may ignore the requested sound. The service requires access to your graphical session and its session bus; check the journal if the screensaver query or notification fails.
+This calls the same reminder used by the tracker. Run `make test` for the automated tests. Run it in your graphical desktop session; after installing the Debian package, use `python3 /usr/lib/focus-unlock/focus_unlock.py --test-notification`. A successful command means the notification was submitted, so check visually and listen to confirm it appeared and sounded. If you see the notification but hear no sound, check GNOME's notification sound settings and system volume. A desktop may ignore the requested sound. The service requires access to your graphical session and its session bus; check the journal if the screensaver query or notification fails.

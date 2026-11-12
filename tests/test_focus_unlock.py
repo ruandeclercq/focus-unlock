@@ -32,7 +32,7 @@ class TrackerTests(unittest.TestCase):
             tracker.subprocess, "run", return_value=SimpleNamespace(returncode=0)
         ) as run:
             stdout.isatty.return_value = False
-            tracker.beep()
+            self.assertTrue(tracker.beep())
             command = run.call_args.args[0]
             self.assertEqual(command[0], "notify-send")
             self.assertIn("--hint=string:sound-name:message-new-instant", command)
@@ -43,7 +43,7 @@ class TrackerTests(unittest.TestCase):
             tracker.subprocess, "run", side_effect=FileNotFoundError("notify-send")
         ), self.assertLogs(tracker.logger, level="ERROR"):
             stdout.isatty.return_value = False
-            tracker.beep()
+            self.assertFalse(tracker.beep())
 
 
 if __name__ == "__main__":
